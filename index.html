@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Silent SOS | Discreet Safety & Emergency Dispatch</title>
+  <meta name="description" content="Next-generation discreet silent emergency SOS system for university students, faculty, and campus security dispatch teams.">
+  <meta name="theme-color" content="#0B0F19">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Leaflet CSS & JS for Campus Geolocation Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/camouflage.css">
+</head>
+<body class="theme-dark">
+  
+  <!-- ========================================================================= -->
+  <!-- TOP GLOBAL HEADER (Shown when authenticated)                              -->
+  <!-- ========================================================================= -->
+  <header class="app-header hidden" id="appHeader">
+    <div class="header-left">
+      <div class="logo-badge">
+        <i data-lucide="shield-alert" class="logo-icon"></i>
+        <div class="logo-text">
+          <span class="brand-title">CAMPUS<span class="brand-accent">SOS</span></span>
+          <span class="brand-subtitle">SILENT SENTINEL v2.4</span>
+        </div>
+      </div>
+      <div class="system-status-indicator" id="systemStatus">
+        <span class="status-dot online"></span>
+        <span class="status-text">CAMPUS NET SECURE</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <!-- Mode / Role Switcher Tabs -->
+      <nav class="role-nav" role="tablist" aria-label="Application Role Mode">
+        <button class="nav-tab active" id="tabStudent" role="tab" aria-selected="true" data-target="view-student">
+          <i data-lucide="user-check"></i>
+          <span>Student Client</span>
+        </button>
+        <button class="nav-tab" id="tabDispatch" role="tab" aria-selected="false" data-target="view-dispatch">
+          <i data-lucide="radio"></i>
+          <span>Security Dispatch</span>
+          <span class="badge-count" id="activeAlertsBadge">0</span>
+        </button>
+        <button class="nav-tab" id="tabAdmin" role="tab" aria-selected="false" data-target="view-admin" style="display:none;">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Admin Panel</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <button class="btn-ghost-icon" id="btnToggleCamouflage" title="Quick Stealth Camouflage (Ctrl+Shift+C)">
+        <i data-lucide="eye-off"></i>
+        <span class="action-label">Camouflage</span>
+      </button>
+      <button class="btn-ghost-icon" id="btnEmergencyContacts" title="Emergency Contacts & Profile">
+        <i data-lucide="contact-2"></i>
+      </button>
+      <button class="btn-ghost-icon" id="btnHelpGuide" title="Safety Instructions & Hotkeys">
+        <i data-lucide="help-circle"></i>
+      </button>
+
+      <!-- Authenticated User Profile Pill -->
+      <div class="user-pill" id="userPill">
+        <div class="user-avatar" id="headerUserAvatar">JD</div>
+        <div class="user-meta">
+          <div class="user-name-row">
+            <span class="user-name" id="headerUserName">Jane Doe</span>
+            <span class="role-badge-tag role-student" id="headerRolePill">STUDENT</span>
+          </div>
+          <span class="user-id" id="headerUserId">ID: #ST-8841</span>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <button class="btn-logout" id="btnLogout" title="Log out of session">
+        <i data-lucide="log-out"></i>
+        <span class="action-label">Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTAINER (Login & Role Dashboards)                                  -->
+  <!-- ========================================================================= -->
+  <main class="main-container">
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 0: PROFESSIONAL LOGIN PAGE (Shown First by Default)                -->
+    <!-- ======================================================================= -->
+    <section class="view-panel active" id="view-login">
+      <div class="login-wrapper">
+        <div class="login-card-container">
+          
+          <!-- Login Header Brand -->
+          <div class="login-brand-header">
+            <div class="login-shield-badge">
+              <i data-lucide="shield-alert" class="login-shield-icon"></i>
+            </div>
+            <h1 class="login-main-title">CAMPUS<span class="brand-accent">SOS</span></h1>
+            <p class="login-subtitle">Secure University Emergency Dispatch & Silent Sentinel Network</p>
+            <div class="login-demo-notice">
+              <i data-lucide="info"></i>
+              <span>Frontend Demo Mode • Select role or use demo credentials</span>
+            </div>
+          </div>
+
+          <!-- Quick One-Click Demo Role Selector -->
+          <div class="demo-role-section">
+            <label class="demo-role-label">Quick 1-Click Role Login:</label>
+            <div class="demo-role-grid">
+              <button type="button" class="demo-pill-btn" data-demo-role="student" title="Fill and login as Student">
+                <div class="pill-top"><i data-lucide="user"></i><strong>Student</strong></div>
+                <span class="pill-email">student@campus.com</span>
+              </button>
+              <button type="button" class="demo-pill-btn" data-demo-role="security" title="Fill and login as Campus Security">
+                <div class="pill-top"><i data-lucide="shield"></i><strong>Security</strong></div>
+                <span class="pill-email">security@campus.com</span>
+              </button>
+              <button type="button" class="demo-pill-btn" data-demo-role="admin" title="Fill and login as System Admin">
+                <div class="pill-top"><i data-lucide="sliders"></i><strong>Admin</strong></div>
+                <span class="pill-email">admin@campus.com</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Login Form -->
+          <form class="login-form" id="loginForm" autocomplete="on">
+            <div class="login-error-banner hidden" id="loginErrorBanner">
+              Invalid credentials. Please select a role or enter the demo details below.
+            </div>
+
+            <div class="form-group">
+              <label for="loginEmail"><i data-lucide="mail"></i> Email or University ID</label>
+              <div class="input-with-icon">
+                <input type="text" id="loginEmail" class="form-input" placeholder="e.g. student@campus.com or ST-8841" required autofocus>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="loginPassword"><i data-lucide="lock"></i> Password</label>
+              <div class="input-with-icon input-pass-wrap">
+                <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" required>
+                <button type="button" class="btn-toggle-password" id="btnTogglePassword" title="Toggle password visibility">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-login-submit" id="btnLoginSubmit">
+              <i data-lucide="log-in"></i>
+              <span>Sign In to Campus Sentinel</span>
+            </button>
+          </form>
+
+          <!-- Demo Credentials Reference Table -->
+          <div class="demo-credentials-card">
+            <div class="cred-header">
+              <i data-lucide="key"></i>
+              <span>Available Demo Accounts</span>
+            </div>
+            <div class="cred-table">
+              <div class="cred-row">
+                <span class="cred-role student"><i data-lucide="user"></i> Student</span>
+                <code>student@campus.com</code>
+                <span class="cred-pass">student123</span>
+              </div>
+              <div class="cred-row">
+                <span class="cred-role security"><i data-lucide="shield"></i> Security</span>
+                <code>security@campus.com</code>
+                <span class="cred-pass">security123</span>
+              </div>
+              <div class="cred-row">
+                <span class="cred-role admin"><i data-lucide="sliders"></i> Admin</span>
+                <code>admin@campus.com</code>
+                <span class="cred-pass">admin123</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="login-footer-security">
+            <i data-lucide="lock"></i>
+            <span>Local demo authentication active. End-to-end telemetry encrypted for campus demonstration.</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 1: STUDENT CLIENT DASHBOARD                                        -->
+    <!-- ======================================================================= -->
+    <section class="view-panel" id="view-student">
+      <div class="student-grid">
+        
+        <!-- Left Column: Primary Silent SOS Trigger & Status -->
+        <div class="student-col-left">
+          
+          <!-- Silent SOS Panic Controller Card -->
+          <div class="glass-card sos-controller-card" id="sosControllerCard">
+            <div class="card-header">
+              <div class="header-tag">
+                <i data-lucide="shield-check"></i>
+                <span>STEALTH EMERGENCY TRIGGER</span>
+              </div>
+              <div class="battery-status" id="deviceBattery">
+                <i data-lucide="battery-charging"></i>
+                <span>94% Battery</span>
+              </div>
+            </div>
+
+            <div class="card-body sos-action-center">
+              <div class="sos-ambient-pulse" id="sosPulseRing"></div>
+              
+              <!-- Massive Hold-to-Activate SOS Button -->
+              <button class="sos-trigger-button" id="sosTriggerBtn" aria-label="Hold to Trigger Silent SOS">
+                <div class="sos-inner-ring">
+                  <i data-lucide="shield-alert" class="sos-btn-icon"></i>
+                  <span class="sos-btn-title">HOLD FOR SILENT SOS</span>
+                  <span class="sos-btn-hint">Press & hold 3s or triple tap</span>
+                </div>
+                <svg class="sos-progress-svg" viewBox="0 0 200 200">
+                  <circle class="sos-progress-bg" cx="100" cy="100" r="90"></circle>
+                  <circle class="sos-progress-bar" id="sosProgressBar" cx="100" cy="100" r="90"></circle>
+                </svg>
+              </button>
+
+              <div class="sos-feedback" id="sosFeedbackText">System armed and ready. Ready to transmit encrypted alert.</div>
+            </div>
+
+            <!-- Active Distress Banner (Hidden when idle) -->
+            <div class="active-sos-banner hidden" id="activeSosBanner">
+              <div class="banner-pulse"></div>
+              <div class="banner-content">
+                <div class="banner-title">
+                  <i data-lucide="alert-triangle"></i>
+                  <span>SILENT SOS TRANSMITTING LIVE</span>
+                </div>
+                <div class="banner-sub">Dispatched to Campus Security Patrol Unit #4 & SafeZone Dispatch</div>
+                <div class="banner-telemetry">
+                  <span class="tele-item"><i data-lucide="mic"></i> Ambient Audio Streaming</span>
+                  <span class="tele-item"><i data-lucide="navigation"></i> GPS Live Sync</span>
+                </div>
+              </div>
+              <div class="banner-actions">
+                <button class="btn-cancel-sos" id="btnCancelSos">
+                  <i data-lucide="x-circle"></i> Cancel SOS (Safe PIN)
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Trigger Actions & Shortcuts -->
+            <div class="sos-quick-tools">
+              <button class="tool-btn" id="btnQuickSafeWalk" title="Start SafeWalk dead-man timer">
+                <i data-lucide="footprints"></i>
+                <span>SafeWalk Timer</span>
+              </button>
+              <button class="tool-btn" id="btnLaunchCamouflage" title="Switch to disguised app">
+                <i data-lucide="calculator"></i>
+                <span>Ghost Disguise</span>
+              </button>
+              <button class="tool-btn" id="btnFakeCall" title="Simulate incoming escape call">
+                <i data-lucide="phone-incoming"></i>
+                <span>Fake Call</span>
+              </button>
+              <button class="tool-btn tool-btn-danger" id="btnLoudAlarm" title="Un-silence deterrent alarm">
+                <i data-lucide="volume-2"></i>
+                <span>Loud Alarm</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Indoor Location Fine-Tuning Card -->
+          <div class="glass-card location-fine-card">
+            <div class="card-title-row">
+              <div class="title-with-icon">
+                <i data-lucide="map-pin"></i>
+                <h3>Indoor Campus Location</h3>
+              </div>
+              <button class="btn-small-link" id="btnRefreshGPS">
+                <i data-lucide="locate"></i> Sync GPS
+              </button>
+            </div>
+
+            <div class="location-form-grid">
+              <div class="form-group">
+                <label for="selectBuilding"><i data-lucide="building"></i> Campus Zone / Building</label>
+                <select id="selectBuilding" class="form-input">
+                  <option value="Main Library - West Wing" selected>Main Library (West Wing)</option>
+                  <option value="Science & Engineering Complex">Science & Engineering Complex</option>
+                  <option value="Student Union Center">Student Union Center</option>
+                  <option value="Residential Quad - North Dorm">Residential Quad - North Dorm</option>
+                  <option value="Campus Parking Structure B">Campus Parking Structure B</option>
+                  <option value="Athletics Complex & Field">Athletics Complex & Field</option>
+                  <option value="Arts & Humanities Hall">Arts & Humanities Hall</option>
+                </select>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="inputFloor"><i data-lucide="layers"></i> Floor / Level</label>
+                  <select id="inputFloor" class="form-input">
+                    <option value="Ground Floor">Ground Floor</option>
+                    <option value="Level 1">Level 1</option>
+                    <option value="Level 2" selected>Level 2 (Quiet Study Area)</option>
+                    <option value="Level 3">Level 3 (Archives)</option>
+                    <option value="Basement / Lower Level">Basement</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="inputRoom"><i data-lucide="door-open"></i> Room / Landmark</label>
+                  <input type="text" id="inputRoom" class="form-input" value="Study Pod 204B" placeholder="e.g. Lab 302, Stairwell C">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSituationNote"><i data-lucide="message-square"></i> Silent Situation Note (Optional)</label>
+                <input type="text" id="inputSituationNote" class="form-input" placeholder="e.g. Suspicious person near exit, cannot speak">
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <!-- Right Column: Interactive Campus Map & Live Safe Zones -->
+        <div class="student-col-right">
+          <div class="glass-card map-card">
+            <div class="map-card-header">
+              <div class="map-title-wrap">
+                <i data-lucide="compass" class="icon-accent"></i>
+                <div>
+                  <h3 class="card-heading">Live Campus Safety Geolocation Map</h3>
+                  <span class="card-subtext">Real-time GPS • Blue Light Towers • Monitored Safe Corridors</span>
+                </div>
+              </div>
+              <div class="map-controls">
+                <button class="map-filter-btn active" id="btnFilterAll">All Safety</button>
+                <button class="map-filter-btn" id="btnFilterTowers">Blue Lights</button>
+                <button class="map-filter-btn" id="btnFilterCorridors">Lit Pathways</button>
+                <button class="map-filter-btn" id="btnCenterMap" title="Center to My GPS">
+                  <i data-lucide="crosshair"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Leaflet Map Canvas -->
+            <div id="campusMap" class="campus-map-viewport"></div>
+
+            <!-- Map Legend Bar -->
+            <div class="map-legend">
+              <div class="legend-item"><span class="legend-dot my-pos"></span> Your Position</div>
+              <div class="legend-item"><span class="legend-dot blue-light"></span> 24/7 Blue Light Tower</div>
+              <div class="legend-item"><span class="legend-dot safe-haven"></span> Campus Security Post</div>
+              <div class="legend-item"><span class="legend-line safe-path"></span> Monitored Lit Corridor</div>
+            </div>
+          </div>
+
+          <!-- Active SafeWalk Timer Widget (when enabled) -->
+          <div class="glass-card safewalk-card hidden" id="safewalkWidget">
+            <div class="safewalk-header">
+              <div class="safewalk-title">
+                <i data-lucide="timer" class="pulse-icon"></i>
+                <div>
+                  <h4>SafeWalk Sentinel Active</h4>
+                  <p id="safewalkDestText">Route: Library → Residential Quad</p>
+                </div>
+              </div>
+              <div class="safewalk-countdown" id="safewalkDisplay">08:45</div>
+            </div>
+            <div class="safewalk-progress">
+              <div class="safewalk-progress-bar" id="safewalkBar" style="width: 70%;"></div>
+            </div>
+            <div class="safewalk-footer">
+              <span class="safewalk-hint"><i data-lucide="shield-alert"></i> Auto-dispatches silent SOS if you don't check in</span>
+              <button class="btn-primary-small" id="btnSafeCheckIn">
+                <i data-lucide="check-circle-2"></i> Safe Check-In
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 2: CAMPUS SECURITY DISPATCH COMMAND CENTER                         -->
+    <!-- ======================================================================= -->
+    <section class="view-panel" id="view-dispatch">
+      <div class="dispatch-layout">
+        
+        <!-- Dispatch Stats Bar -->
+        <div class="dispatch-stats-bar">
+          <div class="stat-card urgent">
+            <div class="stat-icon"><i data-lucide="alert-octagon"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="countActiveSos">0</span>
+              <span class="stat-label">Active SOS Alerts</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="shield"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="countOfficers">6</span>
+              <span class="stat-label">Units on Patrol</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="footprints"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="countSafeWalks">3</span>
+              <span class="stat-label">Active SafeWalks</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="clock"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">1.4 min</span>
+              <span class="stat-label">Avg Response Time</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dispatch Main Split Area -->
+        <div class="dispatch-main-grid">
+          
+          <!-- Incidents Queue List -->
+          <div class="glass-card dispatch-queue-card">
+            <div class="queue-header">
+              <div class="queue-title-wrap">
+                <i data-lucide="list-ordered"></i>
+                <h3>Emergency Distress Feed</h3>
+              </div>
+              <div class="queue-actions">
+                <button class="btn-small-link" id="btnSimulateIncoming">
+                  <i data-lucide="plus-circle"></i> Test Alert
+                </button>
+              </div>
+            </div>
+
+            <!-- Scrollable List of Incidents -->
+            <div class="incident-list" id="incidentListContainer">
+              <!-- Dynamically rendered incidents -->
+            </div>
+          </div>
+
+          <!-- Active Incident Detail & Dispatch Control Panel -->
+          <div class="glass-card incident-detail-card" id="incidentDetailPanel">
+            <div class="empty-detail-state" id="emptyDetailState">
+              <i data-lucide="radio" class="empty-icon"></i>
+              <h4>No Incident Selected</h4>
+              <p>Select an emergency alert from the queue to view real-time telemetry, location, and dispatch units.</p>
+            </div>
+
+            <div class="active-detail-content hidden" id="activeDetailContent">
+              <!-- Detail Header -->
+              <div class="detail-header">
+                <div class="detail-badge-row">
+                  <span class="incident-badge badge-emergency" id="detBadge">CRITICAL SOS</span>
+                  <span class="incident-time" id="detTime">11:58 AM</span>
+                  <span class="incident-id" id="detId">INC-8891</span>
+                </div>
+                <h3 class="det-student-name" id="detStudentName">Jane Doe</h3>
+                <div class="det-meta-row">
+                  <span><i data-lucide="user"></i> ID: <strong id="detStudentId">ST-8841</strong></span>
+                  <span><i data-lucide="phone"></i> <strong id="detPhone">+1 (555) 234-5678</strong></span>
+                  <span><i data-lucide="battery-charging"></i> Battery: <strong id="detBattery">94%</strong></span>
+                </div>
+              </div>
+
+              <!-- Location & Indoor Landmark -->
+              <div class="detail-section">
+                <h4 class="section-heading"><i data-lucide="map-pin"></i> Pinpoint Location</h4>
+                <div class="location-summary-box">
+                  <div class="loc-main" id="detLocation">Main Library - West Wing</div>
+                  <div class="loc-sub" id="detIndoor">Level 2 (Quiet Study Area) • Study Pod 204B</div>
+                  <div class="loc-coords" id="detCoords">GPS: 37.4275° N, 122.1697° W (Accuracy ±3m)</div>
+                </div>
+                <div class="situation-note-box" id="detNoteBox">
+                  <span class="note-label">Silent Note from Student:</span>
+                  <p class="note-content" id="detSituationNote">"Suspicious person near exit, cannot speak"</p>
+                </div>
+              </div>
+
+              <!-- Ambient Audio proof & Telemetry -->
+              <div class="detail-section">
+                <h4 class="section-heading"><i data-lucide="mic"></i> Ambient Audio Stream</h4>
+                <div class="audio-stream-card">
+                  <div class="audio-waveform-visual" id="audioWaveVisual">
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                  </div>
+                  <div class="audio-controls-row">
+                    <button class="btn-audio-play" id="btnPlayAmbient">
+                      <i data-lucide="volume-2"></i> Play Recorded Ambient
+                    </button>
+                    <span class="audio-duration" id="audioDurationText">00:08 / Live Feed</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Response Action Controls -->
+              <div class="detail-actions">
+                <button class="btn-dispatch-action btn-dispatch-patrol" id="btnDispatchUnit">
+                  <i data-lucide="car"></i> Dispatch Patrol Unit #4
+                </button>
+                <button class="btn-dispatch-action btn-dispatch-call" id="btnContactStudent">
+                  <i data-lucide="message-square"></i> Silent Text Channel
+                </button>
+                <button class="btn-dispatch-action btn-dispatch-resolve" id="btnResolveIncident">
+                  <i data-lucide="check-check"></i> Mark Resolved
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 3: SYSTEM ADMIN DASHBOARD                                          -->
+    <!-- ======================================================================= -->
+    <section class="view-panel" id="view-admin">
+      <div class="admin-layout">
+        
+        <!-- Admin Stats -->
+        <div class="dispatch-stats-bar">
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="tower-control"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">6 / 6</span>
+              <span class="stat-label">Blue Light Towers Active</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="users"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">12,480</span>
+              <span class="stat-label">Enrolled Students</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="shield-alert"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">99.98%</span>
+              <span class="stat-label">Network Uptime</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="activity"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">0.8s</span>
+              <span class="stat-label">SOS Dispatch Latency</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Control Sections Grid -->
+        <div class="admin-grid">
+          
+          <!-- Broadcast Emergency Notification Box -->
+          <div class="glass-card admin-broadcast-card">
+            <div class="card-title-row">
+              <div class="title-with-icon">
+                <i data-lucide="megaphone" style="color:var(--accent-danger);"></i>
+                <h3>Campus-Wide Emergency Broadcast Publisher</h3>
+              </div>
+            </div>
+            <p class="sub-text">Push an instant high-priority emergency banner notification to all connected student devices and safety terminals.</p>
+            <div class="broadcast-input-group">
+              <input type="text" id="inputBroadcastMsg" class="form-input" placeholder="e.g. Severe Weather Advisory: Heavy rain expected. Avoid South Quad walkway.">
+              <button class="btn-primary" id="btnSendBroadcast">
+                <i data-lucide="send"></i> Broadcast Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Blue Light Towers Management Table -->
+          <div class="glass-card admin-towers-card">
+            <div class="card-title-row">
+              <div class="title-with-icon">
+                <i data-lucide="radio" style="color:var(--accent-cyan);"></i>
+                <h3>Blue Light Emergency Towers Status</h3>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Tower ID</th>
+                    <th>Location Zone</th>
+                    <th>GPS Coordinates</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminTowerTableBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Incident Audit Logs -->
+          <div class="glass-card admin-logs-card">
+            <div class="card-title-row">
+              <div class="title-with-icon">
+                <i data-lucide="file-text" style="color:var(--accent-primary);"></i>
+                <h3>Historical Safety Incident Audit Trail</h3>
+              </div>
+              <button class="btn-small-link" id="btnClearAuditLogs">
+                <i data-lucide="trash-2"></i> Clear Resolved Logs
+              </button>
+            </div>
+            <div class="audit-logs-container" id="adminAuditLogsContainer">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- CAMOUFLAGE / GHOST OVERLAY (Calculator & Notes Disguise)                   -->
+  <!-- ========================================================================= -->
+  <div class="camouflage-overlay hidden" id="camouflageOverlay">
+    <div class="camouflage-container">
+      
+      <!-- Stealth Mode Selector Bar -->
+      <div class="camo-bar">
+        <div class="camo-title"><i data-lucide="sparkles"></i> App Disguise Active</div>
+        <div class="camo-modes">
+          <button class="camo-tab active" id="camoTabCalc">Calculator</button>
+          <button class="camo-tab" id="camoTabNotes">Notes</button>
+        </div>
+        <button class="camo-exit-btn" id="btnExitCamouflage" title="Exit Camouflage (Secret: tap logo 3 times or press Esc)">
+          <i data-lucide="log-out"></i>
+        </button>
+      </div>
+
+      <!-- DISGUISE 1: Scientific Calculator -->
+      <div class="camo-screen active" id="camoScreenCalc">
+        <div class="calculator-app">
+          <div class="calc-display">
+            <div class="calc-history" id="calcHistory"></div>
+            <div class="calc-current" id="calcCurrent">0</div>
+          </div>
+          <div class="calc-hint-bar">
+            <span>Tip: Enter <strong>911 =</strong> or <strong>777 =</strong> to trigger Silent SOS discreetly</span>
+          </div>
+          <div class="calc-keys">
+            <button class="calc-btn op" data-val="C">C</button>
+            <button class="calc-btn op" data-val="±">±</button>
+            <button class="calc-btn op" data-val="%">%</button>
+            <button class="calc-btn op op-accent" data-val="/">÷</button>
+
+            <button class="calc-btn num" data-val="7">7</button>
+            <button class="calc-btn num" data-val="8">8</button>
+            <button class="calc-btn num" data-val="9">9</button>
+            <button class="calc-btn op op-accent" data-val="*">×</button>
+
+            <button class="calc-btn num" data-val="4">4</button>
+            <button class="calc-btn num" data-val="5">5</button>
+            <button class="calc-btn num" data-val="6">6</button>
+            <button class="calc-btn op op-accent" data-val="-">−</button>
+
+            <button class="calc-btn num" data-val="1">1</button>
+            <button class="calc-btn num" data-val="2">2</button>
+            <button class="calc-btn num" data-val="3">3</button>
+            <button class="calc-btn op op-accent" data-val="+">+</button>
+
+            <button class="calc-btn num zero" data-val="0">0</button>
+            <button class="calc-btn num" data-val=".">.</button>
+            <button class="calc-btn op op-equals" data-val="=">=</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISGUISE 2: Class Study Notes App -->
+      <div class="camo-screen" id="camoScreenNotes">
+        <div class="notes-app">
+          <div class="notes-header">
+            <div class="notes-title-input" contenteditable="true">CS 341: Data Structures - Lecture 7 Notes</div>
+            <span class="notes-saved-tag">Saved just now</span>
+          </div>
+          <textarea class="notes-body" id="camoNotesText" placeholder="Start typing lecture notes... (Type 'sos911' or triple-tap anywhere to trigger stealth alert)">
+Key Topics:
+- Balanced Binary Search Trees (AVL & Red-Black)
+- Amortized time complexity analysis
+- Graph Traversal algorithms: DFS vs BFS
+- Homework 3 due Friday before midnight at submission portal.
+          </textarea>
+          <div class="notes-footer">
+            <span>Word count: 32 words</span>
+            <span>Secret: Type <strong>sos911</strong> inside notes to dispatch silent SOS</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS & OVERLAYS                                                         -->
+  <!-- ========================================================================= -->
+
+  <!-- SafeWalk Configuration Modal -->
+  <div class="modal-backdrop hidden" id="modalSafeWalk">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title"><i data-lucide="footprints"></i> Start SafeWalk Sentinel</div>
+        <button class="modal-close" id="btnCloseSafeWalkModal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Set your destination and expected travel time. If you do not enter your safe PIN before the timer ends, a silent SOS will automatically fire with your live GPS path.</p>
+        <div class="form-group">
+          <label>Destination</label>
+          <select id="swSelectDest" class="form-input">
+            <option value="Residential Quad - Dorm C">Residential Quad - Dorm C</option>
+            <option value="Campus Parking Lot B">Campus Parking Lot B</option>
+            <option value="Student Union Center">Student Union Center</option>
+            <option value="Library West Wing">Library West Wing</option>
+            <option value="Off-Campus Apartment">Off-Campus Apartment</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estimated Walking Duration</label>
+          <div class="duration-chips" id="durationChips">
+            <button type="button" class="chip" data-min="5">5 mins</button>
+            <button type="button" class="chip active" data-min="10">10 mins</button>
+            <button type="button" class="chip" data-min="15">15 mins</button>
+            <button type="button" class="chip" data-min="25">25 mins</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Safe Deactivation PIN (Default: 1234)</label>
+          <input type="password" id="swInputPin" class="form-input" value="1234" maxlength="6">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btnCancelSafeWalkSetup">Cancel</button>
+        <button class="btn-primary" id="btnStartSafeWalkTimer">
+          <i data-lucide="shield-check"></i> Activate SafeWalk
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fake Call Escape Overlay -->
+  <div class="fake-call-overlay hidden" id="fakeCallOverlay">
+    <div class="fake-call-screen">
+      <div class="caller-avatar-circle">
+        <i data-lucide="user"></i>
+      </div>
+      <h2 class="caller-name" id="fakeCallerName">Dad (Home)</h2>
+      <p class="call-status" id="fakeCallStatus">Incoming Call...</p>
+      
+      <div class="call-actions-incoming" id="callActionsIncoming">
+        <button class="call-btn btn-decline" id="btnDeclineCall">
+          <i data-lucide="phone-off"></i>
+          <span>Decline</span>
+        </button>
+        <button class="call-btn btn-accept" id="btnAcceptCall">
+          <i data-lucide="phone"></i>
+          <span>Accept</span>
+        </button>
+      </div>
+
+      <div class="call-actions-active hidden" id="callActionsActive">
+        <div class="call-timer" id="fakeCallTimer">00:01</div>
+        <div class="fake-voice-indicator">
+          <i data-lucide="volume-2"></i> Voice Simulation Active ("Hey, are you on your way?...")
+        </div>
+        <button class="call-btn btn-hangup" id="btnHangupCall">
+          <i data-lucide="phone-off"></i>
+          <span>End Call</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emergency Contacts & Medical ID Modal -->
+  <div class="modal-backdrop hidden" id="modalContacts">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title"><i data-lucide="contact-2"></i> Emergency Contacts & Medical Profile</div>
+        <button class="modal-close" id="btnCloseContactsModal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="contacts-tabs">
+          <button class="tab-pill active" id="pillContacts">Trusted Contacts</button>
+          <button class="tab-pill" id="pillMedical">Medical ID</button>
+        </div>
+
+        <div class="tab-section-content active" id="secContacts">
+          <div class="contact-list" id="contactList">
+            <div class="contact-item">
+              <div class="contact-avatar">CP</div>
+              <div class="contact-info">
+                <strong>Campus Police Dispatch (24/7)</strong>
+                <span>+1 (555) 911-CAMP • Direct Line</span>
+              </div>
+              <span class="badge-tag">Security</span>
+            </div>
+            <div class="contact-item">
+              <div class="contact-avatar">EM</div>
+              <div class="contact-info">
+                <strong>Emily Miller (Roommate)</strong>
+                <span>+1 (555) 342-9901 • Dorm C-204</span>
+              </div>
+              <span class="badge-tag">Roommate</span>
+            </div>
+            <div class="contact-item">
+              <div class="contact-avatar">MD</div>
+              <div class="contact-info">
+                <strong>Michael Doe (Parent)</strong>
+                <span>+1 (555) 887-2134</span>
+              </div>
+              <span class="badge-tag">Family</span>
+            </div>
+          </div>
+          <div class="share-sos-links">
+            <p class="sub-text">Simulate sharing emergency broadcast:</p>
+            <div class="link-buttons">
+              <button class="btn-small-link" id="btnShareWhatsApp"><i data-lucide="send"></i> Test WhatsApp SOS</button>
+              <button class="btn-small-link" id="btnShareSMS"><i data-lucide="message-circle"></i> Test SMS SOS</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-section-content" id="secMedical">
+          <div class="medical-grid">
+            <div class="med-item"><label>Blood Type</label><span>O+ (Positive)</span></div>
+            <div class="med-item"><label>Allergies</label><span>Penicillin, Peanuts</span></div>
+            <div class="med-item"><label>Emergency Meds</label><span>EpiPen in Backpack Front Pocket</span></div>
+            <div class="med-item"><label>Residence</label><span>North Quad Hall, Room 314</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="btnDoneContacts">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Shortcuts Modal -->
+  <div class="modal-backdrop hidden" id="modalHelp">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title"><i data-lucide="shield-question"></i> Campus Silent SOS Quick Guide</div>
+        <button class="modal-close" id="btnCloseHelpModal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="help-item">
+          <h4><i data-lucide="hand"></i> Hold to Trigger (3 Seconds)</h4>
+          <p>Hold the red shield button for 3 seconds. The circle will silently fill and dispatch emergency alert with live GPS to campus security.</p>
+        </div>
+        <div class="help-item">
+          <h4><i data-lucide="eye-off"></i> Ghost Camouflage Mode</h4>
+          <p>Disguises the screen as a normal calculator or notes app. Enter <code>911 =</code> in calculator or type <code>sos911</code> in notes to fire silent SOS.</p>
+        </div>
+        <div class="help-item">
+          <h4><i data-lucide="footprints"></i> SafeWalk Sentinel Timer</h4>
+          <p>Heading back to dorms at night? Start a timer. If you don't enter your PIN upon arrival, security is automatically alerted.</p>
+        </div>
+        <div class="help-item">
+          <h4><i data-lucide="keyboard"></i> Keyboard Shortcuts</h4>
+          <p><code>Ctrl + Shift + S</code>: Instant Silent SOS<br><code>Ctrl + Shift + C</code>: Toggle Ghost Camouflage<br><code>Esc</code>: Exit disguise</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="btnDoneHelp">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- App Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/sosEngine.js"></script>
+  <script src="js/camouflage.js"></script>
+  <script src="js/safewalk.js"></script>
+  <script src="js/dispatch.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
