@@ -50,13 +50,16 @@
 }
 
 /* Reset & Base */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   min-height: 100%;
   background-color: var(--bg-primary);
@@ -73,8 +76,11 @@ html, body {
 body::before {
   content: '';
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
     radial-gradient(circle at 20% 15%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
     radial-gradient(circle at 80% 80%, rgba(239, 68, 68, 0.08) 0%, transparent 45%),
     linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
@@ -168,9 +174,20 @@ body::before {
 }
 
 @keyframes pulseGreen {
-  0% { transform: scale(0.95); opacity: 0.7; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.7; }
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
 }
 
 .status-text {
@@ -396,7 +413,9 @@ body::before {
 .login-card-container::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--accent-primary), var(--accent-danger), var(--accent-cyan));
 }
@@ -650,9 +669,17 @@ body::before {
   height: 12px;
 }
 
-.cred-role.student { color: var(--accent-cyan); }
-.cred-role.security { color: var(--accent-danger); }
-.cred-role.admin { color: var(--accent-amber); }
+.cred-role.student {
+  color: var(--accent-cyan);
+}
+
+.cred-role.security {
+  color: var(--accent-danger);
+}
+
+.cred-role.admin {
+  color: var(--accent-amber);
+}
 
 .cred-row code {
   font-family: var(--font-mono);
@@ -711,7 +738,8 @@ body::before {
   flex: 1;
 }
 
-.admin-towers-card, .admin-logs-card {
+.admin-towers-card,
+.admin-logs-card {
   padding: 20px;
 }
 
@@ -819,9 +847,20 @@ body::before {
   border-radius: 4px;
 }
 
-.audit-status-tag.OPEN { background: rgba(239, 68, 68, 0.2); color: var(--accent-danger); }
-.audit-status-tag.DISPATCHED { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
-.audit-status-tag.RESOLVED { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); }
+.audit-status-tag.OPEN {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-danger);
+}
+
+.audit-status-tag.DISPATCHED {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-amber);
+}
+
+.audit-status-tag.RESOLVED {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--accent-emerald);
+}
 
 /* ==========================================================================
    Main Container & View Routing
@@ -862,7 +901,9 @@ body::before {
 .glass-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
 }
@@ -877,7 +918,8 @@ body::before {
   align-items: start;
 }
 
-.student-col-left, .student-col-right {
+.student-col-left,
+.student-col-right {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -952,9 +994,20 @@ body::before {
 }
 
 @keyframes ambientPulse {
-  0% { transform: scale(0.9); opacity: 0.3; }
-  50% { transform: scale(1.3); opacity: 0.8; }
-  100% { transform: scale(0.9); opacity: 0.3; }
+  0% {
+    transform: scale(0.9);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(0.9);
+    opacity: 0.3;
+  }
 }
 
 .sos-trigger-button {
@@ -980,7 +1033,8 @@ body::before {
   box-shadow: 0 12px 35px rgba(239, 68, 68, 0.45);
 }
 
-.sos-trigger-button:active, .sos-trigger-button.holding {
+.sos-trigger-button:active,
+.sos-trigger-button.holding {
   transform: scale(0.96);
   box-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
 }
@@ -1041,7 +1095,8 @@ body::before {
   stroke: #FFFFFF;
   stroke-width: 6;
   stroke-linecap: round;
-  stroke-dasharray: 565.48; /* 2 * PI * 90 */
+  stroke-dasharray: 565.48;
+  /* 2 * PI * 90 */
   stroke-dashoffset: 565.48;
   transition: stroke-dashoffset 0.05s linear;
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
@@ -1073,8 +1128,15 @@ body::before {
 }
 
 @keyframes flashBorder {
-  0%, 100% { border-color: rgba(239, 68, 68, 0.5); }
-  50% { border-color: rgba(239, 68, 68, 1); }
+
+  0%,
+  100% {
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  50% {
+    border-color: rgba(239, 68, 68, 1);
+  }
 }
 
 .banner-title {
@@ -1460,13 +1522,27 @@ body::before {
 }
 
 @keyframes radarPing {
-  0% { transform: scale(0.4); opacity: 1; }
-  100% { transform: scale(1.6); opacity: 0; }
+  0% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
 }
 
 @keyframes radarPingDanger {
-  0% { transform: scale(0.4); opacity: 1; }
-  100% { transform: scale(2.0); opacity: 0; }
+  0% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.0);
+    opacity: 0;
+  }
 }
 
 /* SafeWalk Widget */
@@ -2023,7 +2099,10 @@ body::before {
    ========================================================================== */
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
   display: flex;
@@ -2047,8 +2126,15 @@ body::before {
 }
 
 @keyframes modalEnter {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-header {
@@ -2300,7 +2386,10 @@ body::before {
 /* Fake Call Overlay */
 .fake-call-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #000000;
   z-index: 300;
   display: flex;
@@ -2353,8 +2442,15 @@ body::before {
 }
 
 @keyframes pulseText {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 .call-actions-incoming {
@@ -2449,8 +2545,15 @@ body::before {
 }
 
 @keyframes toastSlideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .toast.toast-danger {
@@ -2472,15 +2575,19 @@ body::before {
   .student-grid {
     grid-template-columns: 1fr;
   }
+
   .dispatch-main-grid {
     grid-template-columns: 1fr;
   }
+
   .map-card {
     height: 480px;
   }
+
   .dispatch-stats-bar {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .audit-log-row {
     grid-template-columns: 1fr 1fr;
     row-gap: 8px;
@@ -2488,35 +2595,268 @@ body::before {
 }
 
 @media (max-width: 640px) {
-  .app-header {
-    padding: 0 12px;
+
+  html,
+  body {
+    min-width: 320px;
   }
-  .brand-subtitle, .user-meta {
+
+  .app-header {
+    height: auto;
+    min-height: 64px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px 12px;
+    padding: max(10px, env(safe-area-inset-top)) 12px 10px;
+  }
+
+  .header-left,
+  .logo-badge,
+  .logo-text {
+    min-width: 0;
+  }
+
+  .header-left {
+    gap: 0;
+  }
+
+  .brand-title {
+    font-size: 16px;
+  }
+
+  .header-center {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .role-nav {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .role-nav::-webkit-scrollbar {
     display: none;
   }
+
+  .nav-tab {
+    flex: 1 0 auto;
+    justify-content: center;
+    min-height: 40px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .header-right {
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .btn-ghost-icon,
+  .btn-logout {
+    width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .user-pill {
+    padding: 3px;
+  }
+
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .main-container {
+    padding: 14px 12px max(24px, env(safe-area-inset-bottom));
+  }
+
+  .glass-card {
+    border-radius: var(--radius-md);
+    padding: 16px;
+  }
+
+  .card-header,
+  .map-card-header,
+  .safewalk-header,
+  .safewalk-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .battery-status {
+    align-self: flex-end;
+  }
+
+  .sos-controller-card {
+    padding: 14px;
+  }
+
+  .sos-trigger-button {
+    width: min(190px, 68vw);
+    height: min(190px, 68vw);
+  }
+
+  .sos-progress-svg {
+    width: min(210px, calc(68vw + 20px));
+    height: min(210px, calc(68vw + 20px));
+  }
+
+  .map-title-wrap {
+    align-items: flex-start;
+  }
+
+  .map-title-wrap>div {
+    min-width: 0;
+  }
+
+  .card-heading {
+    font-size: 14px;
+  }
+
+  .map-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .map-filter-btn {
+    flex: 1 1 auto;
+    min-height: 40px;
+  }
+
+  .map-filter-btn:last-child {
+    flex: 0 0 40px;
+  }
+
+  .map-card {
+    height: 470px;
+    padding: 14px;
+  }
+
+  .campus-map-viewport {
+    min-height: 260px;
+  }
+
+  .map-legend {
+    justify-content: flex-start;
+    gap: 8px 14px;
+  }
+
+  .legend-item {
+    font-size: 10px;
+  }
+
+  .form-row-2,
+  .medical-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dispatch-queue-card {
+    height: 420px;
+  }
+
+  .incident-detail-card {
+    min-height: 420px;
+  }
+
+  .btn-dispatch-action,
+  .btn-primary,
+  .btn-secondary,
+  .btn-primary-small,
+  .btn-login-submit {
+    min-height: 44px;
+  }
+
+  .login-wrapper {
+    min-height: calc(100vh - 28px);
+    padding: 8px 0;
+  }
+
+  .brand-subtitle,
+  .user-meta {
+    display: none;
+  }
+
   .action-label {
     display: none;
   }
+
   .sos-quick-tools {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .dispatch-stats-bar {
     grid-template-columns: 1fr;
   }
+
   .detail-actions {
     grid-template-columns: 1fr;
   }
+
   .login-card-container {
     padding: 24px 18px;
   }
+
   .demo-role-grid {
     grid-template-columns: 1fr;
   }
+
   .cred-row {
     grid-template-columns: 1fr;
     gap: 4px;
   }
+
+  .cred-row code,
+  .cred-pass {
+    overflow-wrap: anywhere;
+  }
+
+  .login-footer-security {
+    align-items: flex-start;
+  }
+
   .broadcast-input-group {
     flex-direction: column;
+  }
+
+  .admin-broadcast-card,
+  .admin-towers-card,
+  .admin-logs-card {
+    padding: 16px;
+  }
+
+  .admin-table {
+    min-width: 620px;
+  }
+
+  .audit-log-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .modal-dialog {
+    max-height: calc(100dvh - 24px);
+    border-radius: var(--radius-md);
+  }
+
+  .modal-body {
+    padding: 18px;
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 12px 18px;
+  }
+
+  .modal-footer>* {
+    flex: 1;
   }
 }
